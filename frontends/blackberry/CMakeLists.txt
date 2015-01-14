@@ -16,6 +16,7 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR} 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${BBCASCADES_INCLUDE_DIR}
+    $ENV{QNX_TARGET}/usr/include
 )
 
 set(PhoneBlocker_SRCS
