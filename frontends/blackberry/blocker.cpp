@@ -22,10 +22,26 @@
 Blocker::Blocker(QObject *parent)
     : QObject(parent)
 {
+
 }
 
 Blocker::~Blocker()
 {
+}
+
+void Blocker::blockPhoneNumber(const QString &phoneNumber)
+{
+    if (!m_blockedPhoneNumbers.contains(phoneNumber)) m_blockedPhoneNumbers.append(phoneNumber);
+}
+
+void Blocker::unblockPhoneNumber(const QString &phoneNumber)
+{
+    if (m_blockedPhoneNumbers.contains(phoneNumber)) m_blockedPhoneNumbers.removeOne(phoneNumber);
+}
+
+void Blocker::onCallUpdated(const bb::system::phone::Call &call)
+{
+    if (m_phone.activeLine().isValid() && m_blockedPhoneNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
 }
 
 #include <blocker.moc>

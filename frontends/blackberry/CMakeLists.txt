@@ -40,4 +40,5 @@ target_link_libraries(
     ${QT_QTDECLARATIVE_LIBRARY}
 
     ${BBCASCADES_LIBRARY}
+    ${BBSYSTEM_LIBRARY}
 )

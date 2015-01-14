@@ -20,9 +20,10 @@
 #ifndef BLOCKER_H
 #define BLOCKER_H
 
-#include <bb/pim/message/SmsTransport>
+#include <bb/system/phone/Call>
+#include <bb/system/phone/Phone>
 
-using namespace bb::pim;
+#include <QStringList>
 
 class Blocker : public QObject
 {
@@ -33,13 +34,17 @@ public:
     ~Blocker();
 
 public Q_SLOTS:
+    void unblockPhoneNumber(const QString& phoneNumber);
+    void blockPhoneNumber(const QString& phoneNumber);
 
 Q_SIGNALS:
 
 private Q_SLOTS:
+    void onCallUpdated(const bb::system::phone::Call &call);
 
 private:
-
+    bb::system::phone::Phone m_phone;
+    QStringList m_blockedPhoneNumbers;
 };
 
 #endif
