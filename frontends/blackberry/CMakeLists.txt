@@ -9,6 +9,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 find_package(BBCascades REQUIRED)
+find_package(BBPim REQUIRED)
 
 include_directories(
     ${QT_INCLUDES}

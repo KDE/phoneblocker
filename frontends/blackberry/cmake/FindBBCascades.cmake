@@ -27,7 +27,7 @@ find_path(BBCASCADES_INCLUDE_DIR bbcascades_global.h
   /Library/Frameworks
   /opt/local
   /opt
-  ${QNX_TARGET}/usr
+  $ENV{QNX_TARGET}/usr
 )
 
 find_library(BBCASCADES_LIBRARY
@@ -40,8 +40,8 @@ find_library(BBCASCADES_LIBRARY
   /Library/Frameworks
   /opt/local
   /opt
-  ${QNX_TARGET}/armv7/usr
-  ${QNX_TARGET}/armle-v7/usr
+  $ENV{QNX_TARGET}/armv7/usr
+  $ENV{QNX_TARGET}/armle-v7/usr
 )
 
 

@@ -1,9 +1,9 @@
-# - Try to find BBSystem
+# - Try to find BBPim
 # Once done this will define
 #
-#  BBSYSTEM_FOUND - system has BBSystem
-#  BBSYSTEM_INCLUDE_DIRS - the BBSystem include directory
-#  BBSYSTEM_LIBRARIES - Link these to use BBSystem
+#  BBPIM_FOUND - system has BBPim
+#  BBPIM_INCLUDE_DIRS - the BBPim include directory
+#  BBPIM_LIBRARIES - Link these to use BBPim
 #
 #  Copyright (c) 2013 Laszlo Papp <lpapp@kde.org>
 #
@@ -12,16 +12,16 @@
 #  For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #
 
-if (BBSystem_FIND_REQUIRED)
-    set(_bbSystemReq "REQUIRED")
-endif (BBSystem_FIND_REQUIRED)
+if (BBPim_FIND_REQUIRED)
+    set(_bbPimReq "REQUIRED")
+endif (BBPim_FIND_REQUIRED)
 
-find_package(Qt 4.8 ${_bbSystemReq})
+find_package(Qt 4.8 ${_bbPimReq})
 
-find_path(BBSYSTEM_INCLUDE_DIR Global.hpp
+find_path(BBPIM_INCLUDE_DIR Global.hpp
   HINTS
-  ENV BBSYSTEMDIR
-  PATH_SUFFIXES include include/bb include/bb/system
+  ENV BBPIMDIR
+  PATH_SUFFIXES include include/bb include/bb/pim
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks
@@ -30,8 +30,8 @@ find_path(BBSYSTEM_INCLUDE_DIR Global.hpp
   $ENV{QNX_TARGET}/usr
 )
 
-find_library(BBSYSTEM_LIBRARY
-  NAMES BBSystem bbsystem
+find_library(BBPIM_LIBRARY
+  NAMES BBPim bbpim
   HINTS
   ENV BBSYSTEMDIR
   PATH_SUFFIXES lib64 lib libs64 libs libs/Win32 libs/Win64
@@ -48,6 +48,6 @@ find_library(BBSYSTEM_LIBRARY
 # handle the QUIETLY and REQUIRED arguments and set BBSYSTEM_FOUND to TRUE if
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(BBSystem DEFAULT_MSG BBSYSTEM_LIBRARY BBSYSTEM_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(BBPim DEFAULT_MSG BBPIM_LIBRARY BBPIM_INCLUDE_DIR)
 
-mark_as_advanced(BBSYSTEM_LIBRARY BBSYSTEM_INCLUDE_DIR)
+mark_as_advanced(BBPIM_LIBRARY BBPIM_INCLUDE_DIR)
