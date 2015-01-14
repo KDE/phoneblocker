@@ -21,6 +21,11 @@ include_directories(
 
 set(PhoneBlocker_SRCS
     main.cpp
+    blocker.cpp
+)
+
+QT4_ADD_RESOURCES(PhoneBlocker_RCC_SRCS
+    phoneblocker.qrc
 )
 
 add_executable(phoneblocker ${PhoneBlocker_SRCS} ${PhoneBlocker_RCC_SRCS})
