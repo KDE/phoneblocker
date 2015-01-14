@@ -19,10 +19,19 @@
 
 #include "blocker.h"
 
+#include <bb/pim/message/MimeTypes>
+#include <bb/pim/message/MessageContact>
+
+using namespace bb::pim::account;
+using namespace bb::pim::message;
+
 Blocker::Blocker(QObject *parent)
     : QObject(parent)
 {
-
+    QList<Account> accountList = m_accountService.accounts(Service::Messages, "sms-mms");
+    m_smsAccountIdentifier = accountList.first().id();
+    connect(&m_phone, SIGNAL(callUpdated(Call&)), SLOT(checkNewCall(Call&)));
+    connect(&m_messageService, SIGNAL(void messageAdded(AccountKey, ConversationKey, MessageKey)), SLOT(checkNewMessage(AccountKey, ConversationKey, MessageKey)));
 }
 
 Blocker::~Blocker()
@@ -39,9 +48,17 @@ void Blocker::unblockPhoneNumber(const QString &phoneNumber)
     if (m_blockedPhoneNumbers.contains(phoneNumber)) m_blockedPhoneNumbers.removeOne(phoneNumber);
 }
 
-void Blocker::onCallUpdated(const bb::system::phone::Call &call)
+void Blocker::checkNewMessage(AccountKey /*account_key*/, ConversationKey /*conv*/, MessageKey message_key)
 {
-    if (m_phone.activeLine().isValid() && m_blockedPhoneNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
+    Message message = m_messageService.message(m_smsAccountIdentifier, message_key);
+    MessageContact senderMessageContact = message.sender();
+    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and m_blockedPhoneNumbers.contains(senderMessageContact.address()))
+        m_messageService.remove(m_smsAccountIdentifier, message_key);
+}
+
+void Blocker::checkNewCall(const bb::system::phone::Call &call)
+{
+    if (m_phone.activeLine().isValid() and m_blockedPhoneNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
 }
 
 #include <blocker.moc>

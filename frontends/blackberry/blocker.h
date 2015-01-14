@@ -22,6 +22,8 @@
 
 #include <bb/system/phone/Call>
 #include <bb/system/phone/Phone>
+#include <bb/pim/message/MessageService>
+#include <bb/pim/account/AccountService>
 
 #include <QStringList>
 
@@ -40,11 +42,15 @@ public Q_SLOTS:
 Q_SIGNALS:
 
 private Q_SLOTS:
-    void onCallUpdated(const bb::system::phone::Call &call);
+    void checkNewCall(const bb::system::phone::Call &call);
+    void checkNewMessage(bb::pim::account::AccountKey accountId, bb::pim::message::ConversationKey conversationId, bb::pim::message::MessageKey messageId);
 
 private:
     bb::system::phone::Phone m_phone;
     QStringList m_blockedPhoneNumbers;
+    bb::pim::message::MessageService m_messageService;
+    bb::pim::account::AccountService m_accountService;
+    int m_smsAccountIdentifier;
 };
 
 #endif

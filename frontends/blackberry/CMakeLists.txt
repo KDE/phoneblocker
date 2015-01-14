@@ -41,4 +41,5 @@ target_link_libraries(
 
     ${BBCASCADES_LIBRARY}
     ${BBSYSTEM_LIBRARY}
+    ${BBPIM_LIBRARY}
 )
