@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+
+        <file alias="main.qml">assets/main.qml</file>
+
+        <file alias="previous.png">assets/images/previous.png</file>
+        <file alias="next.png">assets/images/next.png</file>
+
+        <file alias="search.png">assets/images/search.png</file>
+        <file alias="cancel.png">assets/images/cancel.png</file>
+
+        <file alias="copy_link.png">assets/images/copy_link.png</file>
+        <file alias="email.png">assets/images/email.png</file>
+
+        <file alias="email.png">assets/images/share.png</file>
+
+    </qresource>
+</RCC>
