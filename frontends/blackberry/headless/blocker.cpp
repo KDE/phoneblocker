@@ -24,6 +24,7 @@
 
 using namespace bb::pim::account;
 using namespace bb::pim::message;
+using namespace bb::system;
 
 Blocker::Blocker(QObject *parent)
     : QObject(parent)
@@ -32,6 +33,7 @@ Blocker::Blocker(QObject *parent)
     m_smsAccountIdentifier = accountList.first().id();
     connect(&m_phone, SIGNAL(callUpdated(Call&)), SLOT(checkNewCall(Call&)));
     connect(&m_messageService, SIGNAL(void messageAdded(AccountKey, ConversationKey, MessageKey)), SLOT(checkNewMessage(AccountKey, ConversationKey, MessageKey)));
+    connect(&m_invokeManager, SIGNAL(invoked(const InvokeRequest&)), SLOT(checkInvocation(const InvokeRequest&)));
 }
 
 Blocker::~Blocker()
@@ -59,6 +61,10 @@ void Blocker::checkNewMessage(AccountKey /*account_key*/, ConversationKey /*conv
 void Blocker::checkNewCall(const bb::system::phone::Call &call)
 {
     if (m_phone.activeLine().isValid() and m_blockedPhoneNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
+}
+
+void Blocker::checkInvocation(const InvokeRequest &request)
+{
 }
 
 #include <blocker.moc>

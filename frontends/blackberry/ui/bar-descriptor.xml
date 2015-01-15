@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='utf-8' standalone='no'?>
+<qnx xmlns="http://www.qnx.com/schemas/application/1.0">
+    <id>com.kde.PhoneBlocker</id>
+    <name>Phone Blocker</name>
+    <versionNumber>1.0.1</versionNumber>
+    <description>Phone Blocker</description>
+    <initialWindow>
+        <systemChrome>none</systemChrome>
+        <transparent>false</transparent>
+        <autoOrients>true</autoOrients>
+    </initialWindow>
+    <icon>
+        <image>phoneblocker114.png</image>
+    </icon>
+    <author>Laszlo Papp</author>
+    <authorId>gYAAgA1TDd8u1elTKGv_D0MZ9UU</authorId>
+    <category>core.media</category>
+
+    <configuration id="com.qnx.qcc.toolChain.1485069140" name="Device-Debug">
+        <platformArchitecture>armle-v7</platformArchitecture>
+        <asset path="../../build/frontends/blackberry/phoneblocker" entry="true" type="Qnx/Elf">phoneblocker</asset>
+    </configuration>
+     
+    <configuration id="com.qnx.qcc.toolChain.1120265426" name="Device-Release">
+        <platformArchitecture>armle-v7</platformArchitecture>  
+        <asset path="../../build/frontends/blackberry/phoneblocker.so" entry="true" type="Qnx/Elf">phoneblocker.so</asset>
+    </configuration>
+
+    <asset path="assets/images/phoneblocker114.png">phoneblocker114.png</asset>
+    <asset path="assets">assets</asset>
+    
+    <asset path="assets" dest="assets">
+        <exclude name="**/*.qml"/>
+    </asset>
+
+    <permission system="true">run_native</permission>
+    <permission system="true">_sys_run_headless</permission>
+
+    <invoke-target id="com.phoneblocker.UI">
+        <invoke-target-type>application</invoke-target-type>
+        <invoke-target-name>PhoneBlockerHeadlessUI</invoke-target-name>
+        <entry-point-id>PhoneblockerHeadlessUI</entry-point-id>
+    </invoke-target>
+
+    <invoke-target id="com.phoneblacker.HEADLESSPORTION">
+        <invoke-target-type>application.headless</invoke-target-type>
+        <invoke-target-name>PhoneBlockerHeadlessPart</invoke-target-name>
+        <entry-point-id>PhoneBlockerHeadlessPart</entry-point-id>
+        <filter>
+            <action>bb.action.system.STARTED</action>
+            <mime-type>application/vnd.blackberry.system.event.STARTED</mime-type>
+            <property var="uris" value="data://local"/>
+        </filter>
+        <filter>
+            <action>bb.action.system.UPDATED</action>
+            <mime-type>application/vnd.blackberry.system.event.UPDATED</mime-type>
+            <property var="uris" value="data://local"/>
+        </filter>
+        <filter>
+            <action>bb.action.system.INSTALLED</action>
+            <mime-type>application/vnd.blackberry.system.event.INSTALLED</mime-type>
+            <property var="uris" value="data://local"/>
+        </filter>
+    </invoke-target>
+
+    <env var="LD_LIBRARY_PATH" value="app/native/lib:/usr/lib/qt4/lib"/>
+    <env var="CASCADES_THEME" value="dark"/>
+</qnx>

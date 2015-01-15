@@ -19,33 +19,11 @@
 
 #include "blocker.h"
 
-#include <bb/cascades/Application>
-#include <bb/cascades/QmlDocument>
-#include <bb/cascades/Page>
+#include <bb/Application>
 
-#include <QLocale>
-#include <QTranslator>
-
-using namespace bb::cascades;
-
-Q_DECL_EXPORT int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     Application application(argc, argv);
-
-    QTranslator translator;
-    QString localeString = QLocale().name();
-    QString filename = QString("PhoneBlocker_%1").arg(localeString);
-    if (translator.load(filename, "app/native/qm")) {
-        application.installTranslator(&translator);
-    }
-
     Blocker blocker;
-
-    QmlDocument *qmlDocument = QmlDocument::create("asset:///main.qml").parent(&application);
-    qmlDocument->setContextProperty("blocker", &blocker);
-
-    AbstractPane *rootPane= qmlDocument->createRootObject<AbstractPane>();
-    application.setScene(rootPane);
-
     return application.exec();
 }

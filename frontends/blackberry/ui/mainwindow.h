@@ -20,37 +20,22 @@
 #ifndef BLOCKER_H
 #define BLOCKER_H
 
-#include <bb/system/phone/Call>
-#include <bb/system/phone/Phone>
-#include <bb/pim/message/MessageService>
-#include <bb/pim/account/AccountService>
+#include <bb/cascades/NavigationPane>
+#include <bb/cascades/Page>
 
 #include <QStringList>
 
-class Blocker : public QObject
+class MainWindow : public QObject
 {
     Q_OBJECT
 
 public:
-    Blocker(QObject *parent = 0);
-    ~Blocker();
-
-public Q_SLOTS:
-    void unblockPhoneNumber(const QString& phoneNumber);
-    void blockPhoneNumber(const QString& phoneNumber);
-
-Q_SIGNALS:
-
-private Q_SLOTS:
-    void checkNewCall(const bb::system::phone::Call &call);
-    void checkNewMessage(bb::pim::account::AccountKey accountId, bb::pim::message::ConversationKey conversationId, bb::pim::message::MessageKey messageId);
+    MainWindow(QObject *parent = 0);
+    ~MainWindow();
 
 private:
-    bb::system::phone::Phone m_phone;
-    QStringList m_blockedPhoneNumbers;
-    bb::pim::message::MessageService m_messageService;
-    bb::pim::account::AccountService m_accountService;
-    int m_smsAccountIdentifier;
+    NavigationPane m_NavigationPane;
+    Page m_page;
 };
 
 #endif
