@@ -28,6 +28,8 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 class Blocker : public QObject
 {
@@ -46,7 +48,10 @@ Q_SIGNALS:
 private Q_SLOTS:
     void checkNewCall(const bb::system::phone::Call &call);
     void checkNewMessage(bb::pim::account::AccountKey accountId, bb::pim::message::ConversationKey conversationId, bb::pim::message::MessageKey messageId);
-    void checkInvocation(const bb::system::InvokeRequest &request);
+
+    void listen();
+    void handleNewConnection();
+    void read();
 
 private:
     bb::system::phone::Phone m_phone;
@@ -55,7 +60,9 @@ private:
     bb::pim::account::AccountService m_accountService;
     int m_smsAccountIdentifier;
 
-    InvokeManager m_invokeManager;
+    int m_portNumber;
+    QTcpServer m_server;
+    QTcpSocket m_socket;
 };
 
 #endif

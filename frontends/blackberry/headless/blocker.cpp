@@ -33,7 +33,7 @@ Blocker::Blocker(QObject *parent)
     m_smsAccountIdentifier = accountList.first().id();
     connect(&m_phone, SIGNAL(callUpdated(Call&)), SLOT(checkNewCall(Call&)));
     connect(&m_messageService, SIGNAL(void messageAdded(AccountKey, ConversationKey, MessageKey)), SLOT(checkNewMessage(AccountKey, ConversationKey, MessageKey)));
-    connect(&m_invokeManager, SIGNAL(invoked(const InvokeRequest&)), SLOT(checkInvocation(const InvokeRequest&)));
+    connect(&m_server, SIGNAL(newConnection()), SLOT(handleNewConnection()));
 }
 
 Blocker::~Blocker()
@@ -63,8 +63,19 @@ void Blocker::checkNewCall(const bb::system::phone::Call &call)
     if (m_phone.activeLine().isValid() and m_blockedPhoneNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
 }
 
-void Blocker::checkInvocation(const InvokeRequest &request)
+void Blocker::listen()
 {
+    m_server.listen(QHostAddress::LocalHost, m_portNumber);
 }
 
+void Blocker::handleNewConnection()
+{
+    connect(&m_socket, SIGNAL(disconnected()), SLOT(disconnected()));
+    connect(&m_socket, SIGNAL(readyRead()), SLOT(read()));
+}
+
+void Blocker::read()
+{
+    blockPhoneNumber(m_socket.readAll());
+}
 #include <blocker.moc>
