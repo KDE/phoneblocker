@@ -23,7 +23,7 @@
 
 int main(int argc, char **argv)
 {
-    Application application(argc, argv);
+    bb::Application application(argc, argv);
     Blocker blocker;
     return application.exec();
 }
