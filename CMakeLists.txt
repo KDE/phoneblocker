@@ -19,9 +19,6 @@
 
 cmake_minimum_required(VERSION 2.8.9)
 project(PhoneBlocker)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-
 option(BUILD_PHONEBLOCKER_BLACKBERRY "Build PhoneBlocker for Blackberry 10" ON)
-
 add_subdirectory(frontends)
