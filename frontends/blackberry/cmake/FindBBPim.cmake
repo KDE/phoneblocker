@@ -16,8 +16,6 @@ if (BBPim_FIND_REQUIRED)
     set(_bbPimReq "REQUIRED")
 endif (BBPim_FIND_REQUIRED)
 
-find_package(Qt 4.8 ${_bbPimReq})
-
 find_path(BBPIM_INCLUDE_DIR Global.hpp
   HINTS
   ENV BBPIMDIR
