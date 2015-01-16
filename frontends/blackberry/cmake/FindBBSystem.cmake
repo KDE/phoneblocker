@@ -16,7 +16,7 @@ if (BBSystem_FIND_REQUIRED)
     set(_bbSystemReq "REQUIRED")
 endif (BBSystem_FIND_REQUIRED)
 
-find_package(Qt 4.8 ${_bbSystemReq})
+find_package(BB ${_bbSystemReq})
 
 find_path(BBSYSTEM_INCLUDE_DIR Global.hpp
   HINTS
