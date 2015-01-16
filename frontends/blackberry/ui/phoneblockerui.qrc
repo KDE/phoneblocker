@@ -12,7 +12,7 @@
         <file alias="copy_link.png">assets/images/copy_link.png</file>
         <file alias="email.png">assets/images/email.png</file>
 
-        <file alias="email.png">assets/images/share.png</file>
+        <file alias="share.png">assets/images/share.png</file>
 
     </qresource>
 </RCC>
