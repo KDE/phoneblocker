@@ -16,6 +16,8 @@ if (BBCascades_FIND_REQUIRED)
     set(_bbCascadesReq "REQUIRED")
 endif (BBCascades_FIND_REQUIRED)
 
+find_package(Qt 4.8 ${_bbCascadesReq})
+
 find_path(BBCASCADES_INCLUDE_DIR bbcascades_global.h
   HINTS
   ENV BBCASCADESDIR
