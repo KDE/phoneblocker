@@ -16,7 +16,7 @@ if (BB_FIND_REQUIRED)
     set(_bbReq "REQUIRED")
 endif (BB_FIND_REQUIRED)
 
-find_package(Qt 4.8 ${_bbReq})
+find_package(Qt4 4.8 ${_bbReq})
 
 find_path(BB_INCLUDE_DIR Global
   HINTS
