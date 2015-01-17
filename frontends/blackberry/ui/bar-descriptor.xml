@@ -2,7 +2,7 @@
 <qnx xmlns="http://www.qnx.com/schemas/application/1.0">
     <id>com.kde.PhoneBlocker</id>
     <name>Phone Blocker</name>
-    <versionNumber>1.0.1</versionNumber>
+    <versionNumber>1.0.0</versionNumber>
     <description>Phone Blocker</description>
     <initialWindow>
         <systemChrome>none</systemChrome>
@@ -18,12 +18,12 @@
 
     <configuration id="com.qnx.qcc.toolChain.1485069140" name="Device-Debug">
         <platformArchitecture>armle-v7</platformArchitecture>
-        <asset path="../../build/frontends/blackberry/phoneblocker" entry="true" type="Qnx/Elf">phoneblocker</asset>
+        <asset path="../../build/frontends/blackberry/ui/phoneblocker" entry="true" type="Qnx/Elf">phoneblocker</asset>
     </configuration>
      
     <configuration id="com.qnx.qcc.toolChain.1120265426" name="Device-Release">
         <platformArchitecture>armle-v7</platformArchitecture>  
-        <asset path="../../build/frontends/blackberry/phoneblocker.so" entry="true" type="Qnx/Elf">phoneblocker.so</asset>
+        <asset path="../../build/frontends/blackberry/ui/phoneblocker.so" entry="true" type="Qnx/Elf">phoneblocker.so</asset>
     </configuration>
 
     <asset path="assets/images/phoneblocker114.png">phoneblocker114.png</asset>
@@ -35,11 +35,12 @@
 
     <permission system="true">run_native</permission>
     <permission system="true">_sys_run_headless</permission>
+    <permission system="true">_sys_headless_nostop</permission>
 
     <invoke-target id="com.phoneblocker.UI">
         <invoke-target-type>application</invoke-target-type>
         <invoke-target-name>PhoneBlockerHeadlessUI</invoke-target-name>
-        <entry-point-id>PhoneblockerHeadlessUI</entry-point-id>
+        <entry-point-id>PhoneBlockerHeadlessUI</entry-point-id>
     </invoke-target>
 
     <invoke-target id="com.phoneblacker.HEADLESSPORTION">
