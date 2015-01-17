@@ -142,5 +142,3 @@ bool SocketWriter::write()
     m_socket.write(data);
     return m_socket.waitForBytesWritten();
 }
-
-#include <socketwriter.moc>

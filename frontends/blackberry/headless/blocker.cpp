@@ -193,4 +193,3 @@ void Blocker::read()
         else if (ccall == 'u') unblockCall(phoneNumber);
     }
 }
-#include <blocker.moc>
