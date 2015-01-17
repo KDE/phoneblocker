@@ -22,6 +22,7 @@
 
 #include <bb/cascades/NavigationPane>
 #include <bb/cascades/Page>
+#include <bb/cascades/ListView>
 
 #include <QStringList>
 
@@ -34,9 +35,15 @@ public:
     ~MainWindow();
 
 private:
-    void createContentPage();
-    bb::cascades::NavigationPane m_NavigationPane;
-    bb::cascades::Page m_page;
+    void createBlockedListPage();
+    void createAddBlockedItemPage();
+    void addApplicationCover();
+
+    bb::cascades::NavigationPane m_navigationPane;
+    bb::cascades::Page m_blockedListPage;
+    bb::cascades::Page m_addBlockedItemPage;
+
+    bb::cascades::ListView blockedListView;
 };
 
 #endif
