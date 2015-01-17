@@ -22,6 +22,8 @@
 #include <bb/pim/message/MimeTypes>
 #include <bb/pim/message/MessageContact>
 
+#include <QTcpSocket>
+
 using namespace bb::pim::account;
 using namespace bb::pim::message;
 using namespace bb::system;
@@ -120,8 +122,9 @@ void Blocker::listen()
 
 void Blocker::handleNewConnection()
 {
-    connect(&m_socket, SIGNAL(disconnected()), SLOT(disconnected()));
-    connect(&m_socket, SIGNAL(readyRead()), SLOT(read()));
+    m_socket = m_server.nextPendingConnection();
+    connect(m_socket, SIGNAL(disconnected()), SLOT(disconnected()));
+    connect(m_socket, SIGNAL(readyRead()), SLOT(read()));
 }
 
 /*
@@ -141,9 +144,9 @@ void Blocker::handleNewConnection()
 
 void Blocker::read()
 {
-    if (!m_socket.canReadLine())
+    if (!m_socket->canReadLine())
         return;
-    QByteArray data = m_socket.readLine();
+    QByteArray data = m_socket->readLine();
     int sdata = data.size();
     if (sdata < 3) {
         qWarning() << "Invalid message";

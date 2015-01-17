@@ -29,7 +29,8 @@
 #include <QObject>
 #include <QStringList>
 #include <QTcpServer>
-#include <QTcpSocket>
+
+class QTcpSocket;
 
 class Blocker : public QObject
 {
@@ -75,7 +76,7 @@ private:
 
     int m_portNumber;
     QTcpServer m_server;
-    QTcpSocket m_socket;
+    QTcpSocket *m_socket;
 };
 
 #endif
