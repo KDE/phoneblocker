@@ -171,7 +171,7 @@ void Blocker::read()
             else if (phoneNumber == 'c') unblockOutsideContactsCall();
         }
     } else {
-        QString phoneNumber = data.mid(2);
+        QString phoneNumber = data.mid(2, sdata-3);
         if (csms == 'b') blockSms(phoneNumber);
         else if (csms == 'u') unblockSms(phoneNumber);
         if (ccall == 'b') blockCall(phoneNumber);
