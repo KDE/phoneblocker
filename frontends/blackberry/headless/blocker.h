@@ -27,8 +27,10 @@
 #include <bb/system/InvokeManager>
 
 #include <QObject>
-#include <QStringList>
 #include <QTcpServer>
+
+#include <list>
+#include <string>
 
 class QTcpSocket;
 
@@ -43,8 +45,8 @@ public:
 Q_SIGNALS:
 
 private Q_SLOTS:
-    void blockCall(const QString& phoneNumber);
-    void unblockCall(const QString& phoneNumber);
+    void blockCall(const std::string& phoneNumber);
+    void unblockCall(const std::string& phoneNumber);
     void blockPrivateCall();
     void unblockPrivateCall();
     void blockAllCall();
@@ -52,8 +54,8 @@ private Q_SLOTS:
     void blockOutsideContactsCall();
     void unblockOutsideContactsCall();
 
-    void blockSms(const QString& phoneNumber);
-    void unblockSms(const QString& phoneNumber);
+    void blockSms(const std::string& phoneNumber);
+    void unblockSms(const std::string& phoneNumber);
     void blockAllSms();
     void unblockAllSms();
     void blockOutsideContactsSms();
@@ -68,8 +70,8 @@ private Q_SLOTS:
 
 private:
     bb::system::phone::Phone m_phone;
-    QStringList m_blockedCallNumbers;
-    QStringList m_blockedSmsNumbers;
+    std::list<std::string> m_blockedCallNumbers;
+    std::list<std::string> m_blockedSmsNumbers;
     bb::pim::message::MessageService m_messageService;
     bb::pim::account::AccountService m_accountService;
     int m_smsAccountIdentifier;

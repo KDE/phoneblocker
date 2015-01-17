@@ -24,9 +24,12 @@
 
 #include <QTcpSocket>
 
+#include <algorithm>
+
 using namespace bb::pim::account;
 using namespace bb::pim::message;
 using namespace bb::system;
+using namespace std;
 
 Blocker::Blocker(QObject *parent)
     : QObject(parent)
@@ -43,14 +46,16 @@ Blocker::~Blocker()
 {
 }
 
-void Blocker::blockCall(const QString &phoneNumber)
+void Blocker::blockCall(const string &phoneNumber)
 {
-    if (!m_blockedCallNumbers.contains(phoneNumber)) m_blockedCallNumbers.append(phoneNumber);
+    if (find(m_blockedCallNumbers.begin(), m_blockedCallNumbers.end(), phoneNumber) == m_blockedCallNumbers.end())
+        m_blockedCallNumbers.push_back(phoneNumber);
 }
 
-void Blocker::unblockCall(const QString &phoneNumber)
+void Blocker::unblockCall(const string &phoneNumber)
 {
-    if (m_blockedCallNumbers.contains(phoneNumber)) m_blockedCallNumbers.removeOne(phoneNumber);
+    if (find(m_blockedCallNumbers.begin(), m_blockedCallNumbers.end(), phoneNumber) != m_blockedCallNumbers.end())
+        m_blockedCallNumbers.remove(phoneNumber);
 }
 
 void Blocker::blockPrivateCall()
@@ -77,14 +82,16 @@ void Blocker::unblockOutsideContactsCall()
 {
 }
 
-void Blocker::blockSms(const QString &phoneNumber)
+void Blocker::blockSms(const string &phoneNumber)
 {
-    if (!m_blockedSmsNumbers.contains(phoneNumber)) m_blockedSmsNumbers.append(phoneNumber);
+    if (find(m_blockedSmsNumbers.begin(), m_blockedSmsNumbers.end(), phoneNumber) == m_blockedSmsNumbers.end())
+        m_blockedSmsNumbers.push_back(phoneNumber);
 }
 
-void Blocker::unblockSms(const QString &phoneNumber)
+void Blocker::unblockSms(const string &phoneNumber)
 {
-    if (m_blockedSmsNumbers.contains(phoneNumber)) m_blockedSmsNumbers.removeOne(phoneNumber);
+    if (find(m_blockedSmsNumbers.begin(), m_blockedSmsNumbers.end(), phoneNumber) != m_blockedSmsNumbers.end())
+        m_blockedSmsNumbers.remove(phoneNumber);
 }
 
 void Blocker::blockAllSms()
@@ -107,13 +114,16 @@ void Blocker::checkNewMessage(AccountKey /*account_key*/, ConversationKey /*conv
 {
     Message message = m_messageService.message(m_smsAccountIdentifier, message_key);
     MessageContact senderMessageContact = message.sender();
-    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and m_blockedSmsNumbers.contains(senderMessageContact.address()))
+    QString contactAddress = senderMessageContact.address();
+    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and find(m_blockedSmsNumbers.begin(), m_blockedSmsNumbers.end(), contactAddress.toStdString()) != m_blockedSmsNumbers.end())
         m_messageService.remove(m_smsAccountIdentifier, message_key);
 }
 
 void Blocker::checkNewCall(const bb::system::phone::Call &call)
 {
-    if (m_phone.activeLine().isValid() and m_blockedCallNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
+    QString phoneNumber = call.phoneNumber();
+    if (m_phone.activeLine().isValid() and find(m_blockedCallNumbers.begin(), m_blockedCallNumbers.end(), phoneNumber.toStdString()) != m_blockedCallNumbers.end())
+        m_phone.endCall(call.callId());
 }
 
 void Blocker::listen()
@@ -147,7 +157,8 @@ void Blocker::read()
 {
     if (!m_socket->canReadLine())
         return;
-    QByteArray data = m_socket->readLine();
+    QByteArray badata = m_socket->readLine();
+    string data = badata.data();
     int sdata = data.size();
     if (sdata < 3) {
         qWarning() << "Invalid message";
@@ -175,7 +186,7 @@ void Blocker::read()
             else if (phoneNumber == 'c') unblockOutsideContactsCall();
         }
     } else {
-        QString phoneNumber = data.mid(2, sdata-3);
+        string phoneNumber = data.substr(2, sdata-3);
         if (csms == 'b') blockSms(phoneNumber);
         else if (csms == 'u') unblockSms(phoneNumber);
         if (ccall == 'b') blockCall(phoneNumber);
