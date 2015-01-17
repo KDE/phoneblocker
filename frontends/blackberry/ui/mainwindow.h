@@ -34,8 +34,9 @@ public:
     ~MainWindow();
 
 private:
-    NavigationPane m_NavigationPane;
-    Page m_page;
+    void createContentPage();
+    bb::cascades::NavigationPane m_NavigationPane;
+    bb::cascades::Page m_page;
 };
 
 #endif
