@@ -26,11 +26,9 @@
 #include <bb/pim/account/AccountService>
 #include <bb/system/InvokeManager>
 
-#include <QObject>
 #include <QTcpServer>
-
-#include <list>
-#include <string>
+#include <QObject>
+#include <QStringList>
 
 class QTcpSocket;
 
@@ -45,8 +43,8 @@ public:
 Q_SIGNALS:
 
 private Q_SLOTS:
-    void blockCall(const std::string& phoneNumber);
-    void unblockCall(const std::string& phoneNumber);
+    void blockCall(const QString& phoneNumber);
+    void unblockCall(const QString& phoneNumber);
     void blockPrivateCall();
     void unblockPrivateCall();
     void blockAllCall();
@@ -54,8 +52,8 @@ private Q_SLOTS:
     void blockOutsideContactsCall();
     void unblockOutsideContactsCall();
 
-    void blockSms(const std::string& phoneNumber);
-    void unblockSms(const std::string& phoneNumber);
+    void blockSms(const QString& phoneNumber);
+    void unblockSms(const QString& phoneNumber);
     void blockAllSms();
     void unblockAllSms();
     void blockOutsideContactsSms();
@@ -70,15 +68,34 @@ private Q_SLOTS:
 
 private:
     bb::system::phone::Phone m_phone;
-    std::list<std::string> m_blockedCallNumbers;
-    std::list<std::string> m_blockedSmsNumbers;
     bb::pim::message::MessageService m_messageService;
     bb::pim::account::AccountService m_accountService;
-    int m_smsAccountIdentifier;
 
-    int m_portNumber;
+    int m_smsAccountIdentifier;
+    int m_portNumber{9987};
+
+    QStringList m_blockedCallNumbers;
+    QStringList m_blockedSmsNumbers;
     QTcpServer m_server;
-    QTcpSocket *m_socket;
+    QTcpSocket *m_socket{nullptr};
+
+    bool m_blockAllSmsNumbers{false};
+    bool m_blockOutsideContactsSmsNumbers{false};
+
+    bool m_blockPrivateCallNumbers{false};
+    bool m_blockAllCallNumbers{false};
+    bool m_blockOutsideContactsCallNumbers{false};
+
+    const QString m_blockedCallNumbersKey{"blockedCallNumbers"};
+    const QString m_blockedSmsNumbersKey{"blockedSmsNumbers"};
+    const QString m_blockAllCallNumbersKey{"blockAllCallNumbers"};
+    const QString m_blockAllSmsNumbersKey{"blockAllSmsNumbers"};
+    const QString m_blockOutsideContactsCallNumbersKey{"blockOutsideContactsCallNumbers"};
+    const QString m_blockOutsideContactsSmsNumbersKey{"blockOutsideContactsSmsNumbers"};
+    const QString m_blockPrivateCallNumbersKey{"blockPrivateCallNumbers"};
+
+    const QString m_authorName{"Laszlo Papp"};
+    const QString m_applicationName{"PhoneBlocker"};
 };
 
 #endif
