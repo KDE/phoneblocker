@@ -19,9 +19,13 @@
 
 #include "socketwriter.h"
 
+#include <QHostAddress>
+
 SocketWriter::SocketWriter(QObject *parent)
     : QObject(parent)
     , m_portNumber(9877)
+    , m_csms('i')
+    , m_ccall('i')
 {
 }
 
@@ -29,40 +33,88 @@ SocketWriter::~SocketWriter()
 {
 }
 
-void SocketWriter::blockSms()
+void SocketWriter::blockSms(const QByteArray &phoneNumber)
 {
+    m_csms = 'b';
+    m_phoneNumber = phoneNumber;
 }
 
-void SocketWriter::unblockSms()
+void SocketWriter::unblockSms(const QByteArray &phoneNumber)
 {
+    m_csms = 'u';
+    m_phoneNumber = phoneNumber;
 }
 
-void SocketWriter::blockCall()
+void SocketWriter::blockCall(const QByteArray &phoneNumber)
 {
+    m_ccall = 'b';
+    m_phoneNumber = phoneNumber;
 }
 
-void SocketWriter::unblockCall()
+void SocketWriter::unblockCall(const QByteArray &phoneNumber)
 {
+    m_ccall = 'u';
+    m_phoneNumber = phoneNumber;
 }
 
 void SocketWriter::blockPrivate()
 {
+    m_ccall = 'b';
+    m_phoneNumber.clear();
 }
 
 void SocketWriter::unblockPrivate()
 {
+    m_ccall = 'u';
+    m_phoneNumber.clear();
 }
 
-void SocketWriter::blockAll()
+void SocketWriter::blockAllSms()
 {
+    m_csms = 'b';
+    m_phoneNumber = "a";
 }
 
-void SocketWriter::unblockAll()
+void SocketWriter::unblockAllSms()
 {
+    m_csms = 'u';
+    m_phoneNumber = "a";
 }
 
-void SocketWriter::blockNumber(const QString &phoneNumber)
+void SocketWriter::blockAllCall()
 {
+    m_ccall = 'b';
+    m_phoneNumber = "a";
+}
+
+void SocketWriter::unblockAllCall()
+{
+    m_ccall = 'u';
+    m_phoneNumber = "a";
+}
+
+void SocketWriter::blockOutsideContactsSms()
+{
+    m_csms = 'b';
+    m_phoneNumber = "c";
+}
+
+void SocketWriter::unblockOutsideContactsSms()
+{
+    m_csms = 'u';
+    m_phoneNumber = "c";
+}
+
+void SocketWriter::blockOutsideContactsCall()
+{
+    m_ccall = 'b';
+    m_phoneNumber = "c";
+}
+
+void SocketWriter::unblockOutsideContactsCall()
+{
+    m_ccall = 'u';
+    m_phoneNumber = "c";
 }
 
 /*
@@ -82,6 +134,13 @@ void SocketWriter::blockNumber(const QString &phoneNumber)
 
 bool SocketWriter::write()
 {
+    m_socket.connectToHost(QHostAddress::LocalHost, m_portNumber);
+    if (!m_socket.waitForConnected())
+        return false;
+    QByteArray data;
+    data.append(m_csms); data.append(m_ccall); data.append(m_phoneNumber); data.append('\n');
+    m_socket.write(data);
+    return m_socket.waitForBytesWritten();
 }
 
 #include <socketwriter.moc>

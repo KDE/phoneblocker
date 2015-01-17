@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QByteArray>
 
 class SocketWriter : public QObject
 {
@@ -31,20 +32,29 @@ public:
     SocketWriter(QObject *parent = 0);
     ~SocketWriter();
 
-    void blockSms();
-    void unblockSms();
-    void blockCall();
-    void unblockCall();
+    void blockSms(const QByteArray &phoneNumber);
+    void unblockSms(const QByteArray &phoneNumber);
+    void blockCall(const QByteArray &phoneNumber);
+    void unblockCall(const QByteArray &phoneNumber);
     void blockPrivate();
     void unblockPrivate();
-    void blockAll();
-    void unblockAll();
-    void blockNumber(const QString &phoneNumber);
+    void blockAllSms();
+    void unblockAllSms();
+    void blockAllCall();
+    void unblockAllCall();
+    void blockOutsideContactsSms();
+    void unblockOutsideContactsSms();
+    void blockOutsideContactsCall();
+    void unblockOutsideContactsCall();
+    void blockNumber(const QByteArray &phoneNumber);
     bool write();
 
 private:
     int m_portNumber;
     QTcpSocket m_socket;
+    QByteArray m_phoneNumber;
+    char m_csms;
+    char m_ccall;
 };
 
 #endif
