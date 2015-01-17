@@ -30,6 +30,7 @@ using namespace bb::system;
 
 Blocker::Blocker(QObject *parent)
     : QObject(parent)
+    , m_portNumber(9877)
 {
     QList<Account> accountList = m_accountService.accounts(Service::Messages, "sms-mms");
     m_smsAccountIdentifier = accountList.first().id();
