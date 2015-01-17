@@ -39,13 +39,25 @@ public:
     Blocker(QObject *parent = 0);
     ~Blocker();
 
-public Q_SLOTS:
-    void unblockPhoneNumber(const QString& phoneNumber);
-    void blockPhoneNumber(const QString& phoneNumber);
-
 Q_SIGNALS:
 
 private Q_SLOTS:
+    void blockCall(const QString& phoneNumber);
+    void unblockCall(const QString& phoneNumber);
+    void blockPrivateCall();
+    void unblockPrivateCall();
+    void blockAllCall();
+    void unblockAllCall();
+    void blockOutsideContactsCall();
+    void unblockOutsideContactsCall();
+
+    void blockSms(const QString& phoneNumber);
+    void unblockSms(const QString& phoneNumber);
+    void blockAllSms();
+    void unblockAllSms();
+    void blockOutsideContactsSms();
+    void unblockOutsideContactsSms();
+
     void checkNewCall(const bb::system::phone::Call &call);
     void checkNewMessage(bb::pim::account::AccountKey accountId, bb::pim::message::ConversationKey conversationId, bb::pim::message::MessageKey messageId);
 
@@ -55,7 +67,8 @@ private Q_SLOTS:
 
 private:
     bb::system::phone::Phone m_phone;
-    QStringList m_blockedPhoneNumbers;
+    QStringList m_blockedCallNumbers;
+    QStringList m_blockedSmsNumbers;
     bb::pim::message::MessageService m_messageService;
     bb::pim::account::AccountService m_accountService;
     int m_smsAccountIdentifier;

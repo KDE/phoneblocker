@@ -40,27 +40,77 @@ Blocker::~Blocker()
 {
 }
 
-void Blocker::blockPhoneNumber(const QString &phoneNumber)
+void Blocker::blockCall(const QString &phoneNumber)
 {
-    if (!m_blockedPhoneNumbers.contains(phoneNumber)) m_blockedPhoneNumbers.append(phoneNumber);
+    if (!m_blockedCallNumbers.contains(phoneNumber)) m_blockedCallNumbers.append(phoneNumber);
 }
 
-void Blocker::unblockPhoneNumber(const QString &phoneNumber)
+void Blocker::unblockCall(const QString &phoneNumber)
 {
-    if (m_blockedPhoneNumbers.contains(phoneNumber)) m_blockedPhoneNumbers.removeOne(phoneNumber);
+    if (m_blockedCallNumbers.contains(phoneNumber)) m_blockedCallNumbers.removeOne(phoneNumber);
+}
+
+void Blocker::blockPrivateCall()
+{
+}
+
+void Blocker::unblockPrivateCall()
+{
+}
+
+void Blocker::blockAllCall()
+{
+}
+
+void Blocker::unblockAllCall()
+{
+}
+
+void Blocker::blockOutsideContactsCall()
+{
+}
+
+void Blocker::unblockOutsideContactsCall()
+{
+}
+
+void Blocker::blockSms(const QString &phoneNumber)
+{
+    if (!m_blockedSmsNumbers.contains(phoneNumber)) m_blockedSmsNumbers.append(phoneNumber);
+}
+
+void Blocker::unblockSms(const QString &phoneNumber)
+{
+    if (m_blockedSmsNumbers.contains(phoneNumber)) m_blockedSmsNumbers.removeOne(phoneNumber);
+}
+
+void Blocker::blockAllSms()
+{
+}
+
+void Blocker::unblockAllSms()
+{
+}
+
+void Blocker::blockOutsideContactsSms()
+{
+}
+
+void Blocker::unblockOutsideContactsSms()
+{
 }
 
 void Blocker::checkNewMessage(AccountKey /*account_key*/, ConversationKey /*conv*/, MessageKey message_key)
 {
     Message message = m_messageService.message(m_smsAccountIdentifier, message_key);
     MessageContact senderMessageContact = message.sender();
-    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and m_blockedPhoneNumbers.contains(senderMessageContact.address()))
+    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and m_blockedSmsNumbers.contains(senderMessageContact.address()))
         m_messageService.remove(m_smsAccountIdentifier, message_key);
 }
 
 void Blocker::checkNewCall(const bb::system::phone::Call &call)
 {
-    if (m_phone.activeLine().isValid() and m_blockedPhoneNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
+    if (m_phone.activeLine().isValid() and m_blockedCallNumbers.contains(call.phoneNumber())) m_phone.endCall(call.callId());
 }
 
 void Blocker::listen()
@@ -74,8 +124,58 @@ void Blocker::handleNewConnection()
     connect(&m_socket, SIGNAL(readyRead()), SLOT(read()));
 }
 
+/*
+ * Protocol format:
+ *
+ * 1) SMS: b (Block), u (Unblock) - everything else means ignore the action
+ * 2) Phone: b (Block), u (Unblock) - everything else means ignore the action
+ * 3) Phone number
+ *   a) a (All) 
+ *   b) empty (Private) - only phone unless the technology evolves to sending
+ *     SMSs via unknown numbers
+ *   c) c (Contacts) - block or unblock everyone if not in contacts
+ *   d) digits (Specific) - perhaps list support in future variants of the
+ *     protocol?
+ * 4) \n (terminator)
+ */
+
 void Blocker::read()
 {
-    blockPhoneNumber(m_socket.readAll());
+    if (!m_socket.canReadLine())
+        return;
+    QByteArray data = m_socket.readLine();
+    int sdata = data.size();
+    if (sdata < 3) {
+        qWarning() << "Invalid message";
+        return;
+    }
+    char csms = data.at(0);
+    char ccall = data.at(1);
+    if (sdata == 3) {
+        if (ccall == 'b') blockPrivateCall();
+        else if (ccall == 'u') unblockPrivateCall();
+    } else if (sdata == 4) {
+        char phoneNumber = data.at(2);
+        if (csms == 'b') {
+            if (phoneNumber == 'a') blockAllSms();
+            else if (phoneNumber == 'c') blockOutsideContactsSms();
+        } else if (csms == 'u') {
+            if (phoneNumber == 'a') unblockAllSms();
+            else if (phoneNumber == 'c') unblockOutsideContactsSms();
+        }
+        if (ccall == 'b') {
+            if (phoneNumber == 'a') blockAllCall();
+            else if (phoneNumber == 'c') blockOutsideContactsCall();
+        } else if (csms == 'u') {
+            if (phoneNumber == 'a') unblockAllCall();
+            else if (phoneNumber == 'c') unblockOutsideContactsCall();
+        }
+    } else {
+        QString phoneNumber = data.mid(2);
+        if (csms == 'b') blockSms(phoneNumber);
+        else if (csms == 'u') unblockSms(phoneNumber);
+        if (ccall == 'b') blockCall(phoneNumber);
+        else if (ccall == 'u') unblockCall(phoneNumber);
+    }
 }
 #include <blocker.moc>
