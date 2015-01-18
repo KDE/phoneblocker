@@ -20,12 +20,13 @@ using namespace bb::cascades;
 MainWindow::MainWindow(QObject *parent)
     : QObject(parent)
 {
+    connect(&m_navigationPane, SIGNAL(topChanged(bb::cascades::Page*)), SLOT(handleTopChanged(bb::cascades::Page*)));
+    connect(&m_navigationPane, SIGNAL(popTransitionEnded(bb::cascades::Page*)), SLOT(handlePopTransitionEnded(bb::cascades::Page*)));
     createBlockedListPage();
     createAddBlockedItemPage();
     m_navigationPane.push(&m_blockedListPage);
-    addApplicationCover();
-
     Application::instance()->setScene(&m_navigationPane);
+    addApplicationCover();
 }
 
 MainWindow::~MainWindow()
@@ -72,8 +73,6 @@ void MainWindow::createAddBlockedItemPage()
     content->setBackground(paint);
     content->setLayout(DockLayout::create());
 
-    m_addBlockedItemPage.setContent(content);
-
     m_phoneNumberOption = Option::create().text("Phone Number").selected(true);
     m_allOption = Option::create().text("All");
     m_privateOption = Option::create().text("Private");
@@ -83,13 +82,14 @@ void MainWindow::createAddBlockedItemPage()
     m_callCheckBox = CheckBox::create().text("Call");
     m_smsCheckBox = CheckBox::create().text("Sms");
     m_blockButton = Button::create().text("Block");
+    connect(m_blockButton, SIGNAL(clicked()), SLOT(handleBlockButtonClicked()));
     content->add(m_phoneNumberRadioGroup);
     content->add(m_phoneNumberTextField);
     content->add(m_callCheckBox);
     content->add(m_smsCheckBox);
     content->add(m_blockButton);
 
-    connect(m_blockButton, SIGNAL(clicked()), SLOT(handleBlockButtonClicked()));
+    m_addBlockedItemPage.setContent(content);
 }
 
 void MainWindow::addApplicationCover()
@@ -202,4 +202,18 @@ void MainWindow::handleBlockButtonClicked()
     if (m_smsCheckBox->isChecked())
         m_socketWriter.blockSms();
     m_socketWriter.write();
+}
+
+void MainWindow::handleTopChanged(bb::cascades::Page* page)
+{
+    if (page != &m_addBlockedItemPage) {
+        m_blockedCallListView.clearSelection();
+        m_blockedSmsListView.clearSelection();
+    }
+}
+
+void MainWindow::handlePopTransitionEnded(bb::cascades::Page *page)
+{
+    if (page == &m_addBlockedItemPage)
+        m_phoneNumberTextField->resetText();
 }
