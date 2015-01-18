@@ -34,6 +34,30 @@ MainWindow::~MainWindow()
 
 void MainWindow::createBlockedListPage()
 {
+    ImageView *backgroundImage = ImageView::create("asset:///images/Book_background.amd");
+    backgroundImage->setVerticalAlignment(VerticalAlignment::Fill);
+    backgroundImage->setHorizontalAlignment(HorizontalAlignment::Fill);
+
+    Container *blockedListContainer = new Container();
+    UIConfig *ui = blockedListContainer->ui();
+    blockedListContainer->setTopPadding(ui->px(15.0f));
+    blockedListContainer->setBottomPadding(ui->px(15.0f));
+    blockedListContainer->setLayout(new DockLayout());
+    blockedListContainer->setHorizontalAlignment(HorizontalAlignment::Fill);
+
+    createBlockedListView();
+    m_blockedCallListView.setScrollRole(ScrollRole::Main);
+    m_blockedCallListView.setHorizontalAlignment(HorizontalAlignment::Fill);
+    m_blockedSmsListView.setScrollRole(ScrollRole::Main);
+    m_blockedSmsListView.setHorizontalAlignment(HorizontalAlignment::Fill);
+
+    blockedListContainer->add(&m_blockedCallListView);
+    blockedListContainer->add(&m_blockedSmsListView);
+
+    blockedListContainer->add(backgroundImage);
+    blockedListContainer->add(blockedListContainer);
+
+    m_blockedListPage.setContent(blockedListContainer);
 }
 
 void MainWindow::createAddBlockedItemPage()
@@ -107,4 +131,45 @@ void MainWindow::addApplicationCover()
     AbstractCover* cover = MultiCover::create().add(sceneCoverHigh, CoverDetailLevel::High).add(
             sceneCoverMedium, CoverDetailLevel::Medium);
     Application::instance()->setCover(cover);
+}
+
+void MainWindow::createBlockedListView()
+{
+    QSettings settings(m_authorName, m_applicationName);
+
+    m_blockPrivateCallNumbers = settings.value(m_blockPrivateCallNumbersKey, false).toBool();
+    m_blockAllCallNumbers = settings.value(m_blockAllCallNumbersKey, false).toBool();
+    m_blockOutsideContactsCallNumbers = settings.value(m_blockOutsideContactsCallNumbersKey, false).toBool();
+    m_blockAllSmsNumbers = settings.value(m_blockAllSmsNumbersKey, false).toBool();
+    m_blockOutsideContactsSmsNumbers = settings.value(m_blockOutsideContactsSmsNumbersKey, false).toBool();
+
+    QVariantMap callMap = QVariantMap();
+    QStringList blockedCallNumbers = settings.value(m_blockedCallNumbersKey, QStringList()).toStringList();
+    foreach (const QString &blockedCallNumber, blockedCallNumbers) {
+        callMap["phoneNumber"] = blockedCallNumber;
+        m_blockedCallListModel << callMap;
+    }
+
+    QVariantMap smsMap = QVariantMap();
+    QStringList blockedSmsNumbers = settings.value(m_blockedSmsNumbersKey, QStringList()).toStringList();
+    foreach (const QString &blockedSmsNumber, blockedSmsNumbers) {
+        smsMap["phoneNumber"] = blockedSmsNumber;
+        m_blockedSmsListModel << smsMap;
+    }
+
+    m_blockedCallListView.setDataModel(&m_blockedCallListModel);
+    // m_blockedCallListView.setListItemProvider(blockedCallItemManager);
+    m_blockedSmsListView.setDataModel(&m_blockedSmsListModel);
+    // m_blockedSmsListView.setListItemProvider(blockedSmsItemManager);
+
+    connect(&m_blockedCallListView, SIGNAL(triggered(const QVariantList)), SLOT(handleBlockedCallListTriggered(const QVariantList)));
+    connect(&m_blockedSmsListView, SIGNAL(triggered(const QVariantList)), SLOT(handleBlockedSmsListTriggered(const QVariantList)));
+}
+
+void MainWindow::handleBlockedCallListTriggered(const QVariantList)
+{
+}
+
+void MainWindow::handleBlockedSmsListTriggered(const QVariantList)
+{
 }

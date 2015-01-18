@@ -23,6 +23,7 @@
 #include <bb/cascades/NavigationPane>
 #include <bb/cascades/Page>
 #include <bb/cascades/ListView>
+#include <bb/cascades/QListDataModel>
 
 #include <QStringList>
 
@@ -34,6 +35,12 @@ public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
 
+    void createBlockedListView();
+
+private Q_SLOTS:
+    void handleBlockedCallListTriggered(const QVariantList);
+    void handleBlockedSmsListTriggered(const QVariantList);
+
 private:
     void createBlockedListPage();
     void createAddBlockedItemPage();
@@ -43,7 +50,29 @@ private:
     bb::cascades::Page m_blockedListPage;
     bb::cascades::Page m_addBlockedItemPage;
 
-    bb::cascades::ListView blockedListView;
+    bb::cascades::ListView m_blockedCallListView;
+    bb::cascades::ListView m_blockedSmsListView;
+
+    bb::cascades::QVariantListDataModel m_blockedCallListModel;
+    bb::cascades::QVariantListDataModel m_blockedSmsListModel;
+
+    bool m_blockAllSmsNumbers{false};
+    bool m_blockOutsideContactsSmsNumbers{false};
+
+    bool m_blockPrivateCallNumbers{false};
+    bool m_blockAllCallNumbers{false};
+    bool m_blockOutsideContactsCallNumbers{false};
+
+    const QString m_blockedCallNumbersKey{"blockedCallNumbers"};
+    const QString m_blockedSmsNumbersKey{"blockedSmsNumbers"};
+    const QString m_blockAllCallNumbersKey{"blockAllCallNumbers"};
+    const QString m_blockAllSmsNumbersKey{"blockAllSmsNumbers"};
+    const QString m_blockOutsideContactsCallNumbersKey{"blockOutsideContactsCallNumbers"};
+    const QString m_blockOutsideContactsSmsNumbersKey{"blockOutsideContactsSmsNumbers"};
+    const QString m_blockPrivateCallNumbersKey{"blockPrivateCallNumbers"};
+
+    const QString m_authorName{"Laszlo Papp"};
+    const QString m_applicationName{"PhoneBlocker"};
 };
 
 #endif
