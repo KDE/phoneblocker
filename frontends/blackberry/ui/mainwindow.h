@@ -42,18 +42,18 @@ public:
     MainWindow(QObject *parent = 0);
     ~MainWindow();
 
-    void createBlockedListView();
-
 private Q_SLOTS:
     void handleBlockedCallListTriggered(const QVariantList);
     void handleBlockedSmsListTriggered(const QVariantList);
     void handleBlockButtonClicked();
     void handleTopChanged(bb::cascades::Page* page);
     void handlePopTransitionEnded(bb::cascades::Page *page);
+    void showAddBlockedItemPage();
 
 private:
     void createBlockedListPage();
     void createAddBlockedItemPage();
+    void createBlockedListView();
     void addApplicationCover();
 
     bb::cascades::NavigationPane m_navigationPane;

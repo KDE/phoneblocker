@@ -57,6 +57,9 @@ void MainWindow::createBlockedListPage()
     blockedListContainer->add(&m_blockedSmsListView);
 
     m_blockedListPage.setContent(blockedListContainer);
+
+    ActionItem* addAction = ActionItem::create().title("Add");
+    connect(addAction, SIGNAL(triggered()), SLOT(showAddBlockedItemPage()));
 }
 
 void MainWindow::createAddBlockedItemPage()
@@ -216,4 +219,9 @@ void MainWindow::handlePopTransitionEnded(bb::cascades::Page *page)
 {
     if (page == &m_addBlockedItemPage)
         m_phoneNumberTextField->resetText();
+}
+
+void MainWindow::showAddBlockedItemPage()
+{
+    m_navigationPane.push(&m_addBlockedItemPage);
 }
