@@ -33,28 +33,24 @@ SocketWriter::~SocketWriter()
 {
 }
 
-void SocketWriter::blockSms(const QByteArray &phoneNumber)
+void SocketWriter::blockSms()
 {
     m_csms = 'b';
-    m_phoneNumber = phoneNumber;
 }
 
-void SocketWriter::unblockSms(const QByteArray &phoneNumber)
+void SocketWriter::unblockSms()
 {
     m_csms = 'u';
-    m_phoneNumber = phoneNumber;
 }
 
-void SocketWriter::blockCall(const QByteArray &phoneNumber)
+void SocketWriter::blockCall()
 {
     m_ccall = 'b';
-    m_phoneNumber = phoneNumber;
 }
 
-void SocketWriter::unblockCall(const QByteArray &phoneNumber)
+void SocketWriter::unblockCall()
 {
     m_ccall = 'u';
-    m_phoneNumber = phoneNumber;
 }
 
 void SocketWriter::blockPrivate()
@@ -69,52 +65,29 @@ void SocketWriter::unblockPrivate()
     m_phoneNumber.clear();
 }
 
-void SocketWriter::blockAllSms()
+void SocketWriter::blockAll()
 {
-    m_csms = 'b';
     m_phoneNumber = "a";
 }
 
-void SocketWriter::unblockAllSms()
+void SocketWriter::unblockAll()
 {
-    m_csms = 'u';
     m_phoneNumber = "a";
 }
 
-void SocketWriter::blockAllCall()
+void SocketWriter::blockOutsideContacts()
 {
-    m_ccall = 'b';
-    m_phoneNumber = "a";
-}
-
-void SocketWriter::unblockAllCall()
-{
-    m_ccall = 'u';
-    m_phoneNumber = "a";
-}
-
-void SocketWriter::blockOutsideContactsSms()
-{
-    m_csms = 'b';
     m_phoneNumber = "c";
 }
 
-void SocketWriter::unblockOutsideContactsSms()
+void SocketWriter::unblockOutsideContacts()
 {
-    m_csms = 'u';
     m_phoneNumber = "c";
 }
 
-void SocketWriter::blockOutsideContactsCall()
+void SocketWriter::setPhoneNumber(const QByteArray &phoneNumber)
 {
-    m_ccall = 'b';
-    m_phoneNumber = "c";
-}
-
-void SocketWriter::unblockOutsideContactsCall()
-{
-    m_ccall = 'u';
-    m_phoneNumber = "c";
+    m_phoneNumber = phoneNumber;
 }
 
 /*

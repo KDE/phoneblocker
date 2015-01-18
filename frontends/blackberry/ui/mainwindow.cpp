@@ -11,7 +11,6 @@
 #include <bb/cascades/Label>
 #include <bb/cascades/MultiCover>
 #include <bb/cascades/NavigationPaneProperties>
-#include <bb/cascades/Option>
 #include <bb/cascades/SceneCover>
 #include <bb/cascades/TextFieldInputMode>
 #include <bb/cascades/TitleBar>
@@ -75,7 +74,10 @@ void MainWindow::createAddBlockedItemPage()
 
     m_addBlockedItemPage.setContent(content);
 
-    m_phoneNumberRadioGroup = RadioGroup::create().add(Option::create().text("Phone Number").selected(true)).add(Option::create().text("All")).add(Option::create().text("Private"));
+    m_phoneNumberOption = Option::create().text("Phone Number").selected(true);
+    m_allOption = Option::create().text("All");
+    m_privateOption = Option::create().text("Private");
+    m_phoneNumberRadioGroup = RadioGroup::create().add(m_allOption).add(m_privateOption);
     m_phoneNumberTextField = TextField::create().text("some phone number (e.g. +44747865325").hintText("Phone Number");
     m_phoneNumberTextField->setInputMode(TextFieldInputMode::Type::PhoneNumber);
     m_callCheckBox = CheckBox::create().text("Call");
@@ -189,4 +191,15 @@ void MainWindow::handleBlockedSmsListTriggered(const QVariantList)
 
 void MainWindow::handleBlockButtonClicked()
 {
+    if (m_phoneNumberOption->isSelected())
+        m_socketWriter.setPhoneNumber(m_phoneNumberTextField->text().toLatin1());
+    else if (m_privateOption->isSelected())
+        m_socketWriter.blockPrivate();
+    else if (m_allOption->isSelected())
+        m_socketWriter.blockAll();
+    if (m_callCheckBox->isChecked())
+        m_socketWriter.blockCall();
+    if (m_smsCheckBox->isChecked())
+        m_socketWriter.blockSms();
+    m_socketWriter.write();
 }

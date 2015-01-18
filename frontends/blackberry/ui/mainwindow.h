@@ -20,10 +20,13 @@
 #ifndef BLOCKER_H
 #define BLOCKER_H
 
+#include "socketwriter.h"
+
 #include <bb/cascades/Button>
 #include <bb/cascades/CheckBox>
 #include <bb/cascades/ListView>
 #include <bb/cascades/NavigationPane>
+#include <bb/cascades/Option>
 #include <bb/cascades/Page>
 #include <bb/cascades/RadioGroup>
 #include <bb/cascades/TextField>
@@ -80,10 +83,15 @@ private:
     const QString m_applicationName{"PhoneBlocker"};
 
     bb::cascades::RadioGroup *m_phoneNumberRadioGroup;
+    bb::cascades::Option *m_phoneNumberOption;
+    bb::cascades::Option *m_allOption;
+    bb::cascades::Option *m_privateOption;
     bb::cascades::TextField *m_phoneNumberTextField;
     bb::cascades::CheckBox *m_callCheckBox;
     bb::cascades::CheckBox *m_smsCheckBox;
     bb::cascades::Button *m_blockButton;
+
+    SocketWriter m_socketWriter;
 };
 
 #endif

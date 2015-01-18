@@ -32,21 +32,17 @@ public:
     SocketWriter(QObject *parent = 0);
     ~SocketWriter();
 
-    void blockSms(const QByteArray &phoneNumber);
-    void unblockSms(const QByteArray &phoneNumber);
-    void blockCall(const QByteArray &phoneNumber);
-    void unblockCall(const QByteArray &phoneNumber);
+    void blockSms();
+    void unblockSms();
+    void blockCall();
+    void unblockCall();
     void blockPrivate();
     void unblockPrivate();
-    void blockAllSms();
-    void unblockAllSms();
-    void blockAllCall();
-    void unblockAllCall();
-    void blockOutsideContactsSms();
-    void unblockOutsideContactsSms();
-    void blockOutsideContactsCall();
-    void unblockOutsideContactsCall();
-    void blockNumber(const QByteArray &phoneNumber);
+    void blockAll();
+    void unblockAll();
+    void blockOutsideContacts();
+    void unblockOutsideContacts();
+    void setPhoneNumber(const QByteArray &phoneNumber);
     bool write();
 
 private:
