@@ -20,9 +20,13 @@
 #ifndef BLOCKER_H
 #define BLOCKER_H
 
+#include <bb/cascades/Button>
+#include <bb/cascades/CheckBox>
+#include <bb/cascades/ListView>
 #include <bb/cascades/NavigationPane>
 #include <bb/cascades/Page>
-#include <bb/cascades/ListView>
+#include <bb/cascades/RadioGroup>
+#include <bb/cascades/TextField>
 #include <bb/cascades/QListDataModel>
 
 #include <QStringList>
@@ -40,6 +44,7 @@ public:
 private Q_SLOTS:
     void handleBlockedCallListTriggered(const QVariantList);
     void handleBlockedSmsListTriggered(const QVariantList);
+    void handleBlockButtonClicked();
 
 private:
     void createBlockedListPage();
@@ -73,6 +78,12 @@ private:
 
     const QString m_authorName{"Laszlo Papp"};
     const QString m_applicationName{"PhoneBlocker"};
+
+    bb::cascades::RadioGroup *m_phoneNumberRadioGroup;
+    bb::cascades::TextField *m_phoneNumberTextField;
+    bb::cascades::CheckBox *m_callCheckBox;
+    bb::cascades::CheckBox *m_smsCheckBox;
+    bb::cascades::Button *m_blockButton;
 };
 
 #endif

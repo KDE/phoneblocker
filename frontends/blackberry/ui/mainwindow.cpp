@@ -2,7 +2,6 @@
 
 #include <bb/cascades/ActionItem>
 #include <bb/cascades/Application>
-#include <bb/cascades/CheckBox>
 #include <bb/cascades/ChromeVisibility>
 #include <bb/cascades/Container>
 #include <bb/cascades/CoverDetailLevel>
@@ -12,7 +11,9 @@
 #include <bb/cascades/Label>
 #include <bb/cascades/MultiCover>
 #include <bb/cascades/NavigationPaneProperties>
+#include <bb/cascades/Option>
 #include <bb/cascades/SceneCover>
+#include <bb/cascades/TextFieldInputMode>
 #include <bb/cascades/TitleBar>
 
 using namespace bb::cascades;
@@ -51,18 +52,16 @@ void MainWindow::createBlockedListPage()
     m_blockedSmsListView.setScrollRole(ScrollRole::Main);
     m_blockedSmsListView.setHorizontalAlignment(HorizontalAlignment::Fill);
 
+    blockedListContainer->add(backgroundImage);
     blockedListContainer->add(&m_blockedCallListView);
     blockedListContainer->add(&m_blockedSmsListView);
-
-    blockedListContainer->add(backgroundImage);
-    blockedListContainer->add(blockedListContainer);
 
     m_blockedListPage.setContent(blockedListContainer);
 }
 
 void MainWindow::createAddBlockedItemPage()
 {
-    ActionItem* backAction = ActionItem::create();
+    ActionItem* backAction = ActionItem::create().title("Previous Page");
     connect(backAction, SIGNAL(triggered()), &m_navigationPane, SLOT(pop()));
     m_addBlockedItemPage.setPaneProperties(NavigationPaneProperties::create().backButton(backAction));
     m_addBlockedItemPage.setActionBarAutoHideBehavior(ActionBarAutoHideBehavior::Disabled);
@@ -75,6 +74,20 @@ void MainWindow::createAddBlockedItemPage()
     content->setLayout(DockLayout::create());
 
     m_addBlockedItemPage.setContent(content);
+
+    m_phoneNumberRadioGroup = RadioGroup::create().add(Option::create().text("Phone Number").selected(true)).add(Option::create().text("All")).add(Option::create().text("Private"));
+    m_phoneNumberTextField = TextField::create().text("some phone number (e.g. +44747865325").hintText("Phone Number");
+    m_phoneNumberTextField->setInputMode(TextFieldInputMode::Type::PhoneNumber);
+    m_callCheckBox = CheckBox::create().text("Call");
+    m_smsCheckBox = CheckBox::create().text("Sms");
+    m_blockButton = Button::create().text("Block");
+    content->add(m_phoneNumberRadioGroup);
+    content->add(m_phoneNumberTextField);
+    content->add(m_callCheckBox);
+    content->add(m_smsCheckBox);
+    content->add(m_blockButton);
+
+    connect(m_blockButton, SIGNAL(clicked()), SLOT(handleBlockButtonClicked()));
 }
 
 void MainWindow::addApplicationCover()
@@ -171,5 +184,9 @@ void MainWindow::handleBlockedCallListTriggered(const QVariantList)
 }
 
 void MainWindow::handleBlockedSmsListTriggered(const QVariantList)
+{
+}
+
+void MainWindow::handleBlockButtonClicked()
 {
 }
