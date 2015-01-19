@@ -41,8 +41,7 @@ Blocker::Blocker(QObject *parent)
     connect(&m_messageService, SIGNAL(void messageAdded(AccountKey, ConversationKey, MessageKey)), SLOT(checkNewMessage(AccountKey, ConversationKey, MessageKey)));
     connect(&m_server, SIGNAL(newConnection()), SLOT(handleNewConnection()));
     QSettings settings(m_authorName, m_applicationName);
-    m_blockedCallNumbers = settings.value(m_blockedCallNumbersKey, QStringList()).toStringList();
-    m_blockedSmsNumbers = settings.value(m_blockedSmsNumbersKey, QStringList()).toStringList();
+    m_blockedNumbers = settings.value(m_blockedNumbersKey).value<BlockedNumbers>();
     m_blockPrivateCallNumbers = settings.value(m_blockPrivateCallNumbersKey, false).toBool();
     m_blockAllCallNumbers = settings.value(m_blockAllCallNumbersKey, false).toBool();
     m_blockOutsideContactsCallNumbers = settings.value(m_blockOutsideContactsCallNumbersKey, false).toBool();
@@ -54,22 +53,25 @@ Blocker::~Blocker()
 {
 }
 
-void Blocker::blockCall(const QString &phoneNumber)
+void Blocker::block(const QString &phoneNumber, bool call, bool sms)
 {
-    if (!m_blockedCallNumbers.contains(phoneNumber)) {
-        m_blockedCallNumbers.push_back(phoneNumber);
+    if (!m_blockedNumbers.contains(phoneNumber)) {
+        m_blockedNumbers[phoneNumber] = qMakePair(call, sms);
         QSettings settings(m_authorName, m_applicationName);
-        settings.setValue(m_blockedCallNumbersKey, m_blockedCallNumbers);
+        settings.setValue(m_blockedNumbersKey, QVariant::fromValue<BlockedNumbers>(m_blockedNumbers));
         settings.sync();
     }
 }
 
-void Blocker::unblockCall(const QString &phoneNumber)
+void Blocker::unblock(const QString &phoneNumber, bool call, bool sms)
 {
-    if (m_blockedCallNumbers.contains(phoneNumber)) {
-        m_blockedCallNumbers.removeOne(phoneNumber);
+    if (m_blockedNumbers.contains(phoneNumber)) {
+        if (call and sms)
+            m_blockedNumbers.remove(phoneNumber);
+        else
+            m_blockedNumbers[phoneNumber] = qMakePair(call, sms);
         QSettings settings(m_authorName, m_applicationName);
-        settings.setValue(m_blockedCallNumbersKey, m_blockedCallNumbers);
+        settings.setValue(m_blockedNumbersKey, QVariant::fromValue<BlockedNumbers>(m_blockedNumbers));
         settings.sync();
     }
 }
@@ -92,7 +94,7 @@ void Blocker::blockAllCall()
 void Blocker::unblockAllCall()
 {
     m_blockAllCallNumbers = false;
-    m_blockedCallNumbers.clear();
+    m_blockedNumbers.clear();
 }
 
 void Blocker::blockOutsideContactsCall()
@@ -105,31 +107,10 @@ void Blocker::unblockOutsideContactsCall()
     m_blockOutsideContactsCallNumbers = false;
 }
 
-void Blocker::blockSms(const QString &phoneNumber)
-{
-    if (!m_blockedSmsNumbers.contains(phoneNumber)) {
-        m_blockedSmsNumbers.push_back(phoneNumber);
-        QSettings settings(m_authorName, m_applicationName);
-        settings.setValue(m_blockedCallNumbersKey, m_blockedCallNumbers);
-        settings.sync();
-    }
-}
-
-void Blocker::unblockSms(const QString &phoneNumber)
-{
-    if (m_blockedSmsNumbers.contains(phoneNumber)) {
-        m_blockedSmsNumbers.removeOne(phoneNumber);
-        QSettings settings(m_authorName, m_applicationName);
-        settings.setValue(m_blockedCallNumbersKey, m_blockedCallNumbers);
-        settings.sync();
-    }
-}
-
 void Blocker::blockAllSms()
 {
     m_blockAllSmsNumbers = true;
     QSettings settings(m_authorName, m_applicationName);
-    settings.setValue(m_blockedSmsNumbersKey, QStringList());
     settings.setValue(m_blockAllSmsNumbersKey, true);
     settings.sync();
 }
@@ -137,7 +118,7 @@ void Blocker::blockAllSms()
 void Blocker::unblockAllSms()
 {
     m_blockAllSmsNumbers = false;
-    m_blockedSmsNumbers.clear();
+    m_blockedNumbers.clear();
     QSettings settings(m_authorName, m_applicationName);
     settings.setValue(m_blockAllSmsNumbersKey, false);
     settings.sync();
@@ -164,7 +145,7 @@ void Blocker::checkNewMessage(AccountKey /*account_key*/, ConversationKey /*conv
     Message message = m_messageService.message(m_smsAccountIdentifier, message_key);
     MessageContact senderMessageContact = message.sender();
     // TODO: Add check for m_blockOutsideContactsSmsNumbers and contact list
-    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and (m_blockAllSmsNumbers or m_blockedSmsNumbers.contains(senderMessageContact.address())))
+    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and (m_blockAllSmsNumbers or m_blockedNumbers.contains(senderMessageContact.address())))
         m_messageService.remove(m_smsAccountIdentifier, message_key);
 }
 
@@ -172,7 +153,7 @@ void Blocker::checkNewCall(const bb::system::phone::Call &call)
 {
     // TODO(1): Add check for m_blockOutsideContactsCallNumbers and contact list
     // TODO(2): Add check for m_blockPrivateCallNumbers and private numbers
-    if (m_phone.activeLine().isValid() and m_blockedCallNumbers.contains(call.phoneNumber()))
+    if (m_phone.activeLine().isValid() and m_blockedNumbers.contains(call.phoneNumber()))
         m_phone.endCall(call.callId());
 }
 
@@ -235,10 +216,12 @@ void Blocker::read()
             }
         } else {
             QByteArray phoneNumber = data.mid(2, sdata-3);
-            if (csms == 'b') blockSms(phoneNumber);
-            else if (csms == 'u') unblockSms(phoneNumber);
-            if (ccall == 'b') blockCall(phoneNumber);
-            else if (ccall == 'u') unblockCall(phoneNumber);
+            bool call = (ccall == 'b'), sms = (csms == 'b');
+            if (call or sms) block(phoneNumber, call, sms);
+            else {
+                call = (ccall == 'u'); sms = (csms == 'u');
+                if (call or sms) unblock(phoneNumber, call, sms);
+            }
         }
     }
 }

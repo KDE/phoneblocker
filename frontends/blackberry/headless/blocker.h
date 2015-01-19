@@ -28,9 +28,13 @@
 
 #include <QTcpServer>
 #include <QObject>
-#include <QStringList>
+#include <QMap>
+#include <QPair>
+#include <QString>
 
 class QTcpSocket;
+
+typedef QMap<QString, QPair<bool, bool>> BlockedNumbers;
 
 class Blocker : public QObject
 {
@@ -41,8 +45,9 @@ public:
     ~Blocker();
 
 private Q_SLOTS:
-    void blockCall(const QString& phoneNumber);
-    void unblockCall(const QString& phoneNumber);
+    void block(const QString& phoneNumber, bool call, bool sms);
+    void unblock(const QString& phoneNumber, bool call, bool sms);
+
     void blockPrivateCall();
     void unblockPrivateCall();
     void blockAllCall();
@@ -50,8 +55,6 @@ private Q_SLOTS:
     void blockOutsideContactsCall();
     void unblockOutsideContactsCall();
 
-    void blockSms(const QString& phoneNumber);
-    void unblockSms(const QString& phoneNumber);
     void blockAllSms();
     void unblockAllSms();
     void blockOutsideContactsSms();
@@ -72,8 +75,8 @@ private:
     int m_smsAccountIdentifier;
     const int m_portNumber{9987};
 
-    QStringList m_blockedCallNumbers;
-    QStringList m_blockedSmsNumbers;
+    BlockedNumbers m_blockedNumbers;
+
     QTcpServer m_server;
     QTcpSocket *m_socket{nullptr};
 
@@ -84,8 +87,7 @@ private:
     bool m_blockAllCallNumbers{false};
     bool m_blockOutsideContactsCallNumbers{false};
 
-    const QString m_blockedCallNumbersKey{"blockedCallNumbers"};
-    const QString m_blockedSmsNumbersKey{"blockedSmsNumbers"};
+    const QString m_blockedNumbersKey{"blockedNumbers"};
     const QString m_blockAllCallNumbersKey{"blockAllCallNumbers"};
     const QString m_blockAllSmsNumbersKey{"blockAllSmsNumbers"};
     const QString m_blockOutsideContactsCallNumbersKey{"blockOutsideContactsCallNumbers"};
@@ -95,5 +97,6 @@ private:
     const QString m_authorName{"Laszlo Papp"};
     const QString m_applicationName{"PhoneBlocker"};
 };
+Q_DECLARE_METATYPE(BlockedNumbers)
 
 #endif
