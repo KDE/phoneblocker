@@ -37,10 +37,8 @@ class Blocker : public QObject
     Q_OBJECT
 
 public:
-    Blocker(QObject *parent = 0);
+    Blocker(QObject *parent = nullptr);
     ~Blocker();
-
-Q_SIGNALS:
 
 private Q_SLOTS:
     void blockCall(const QString& phoneNumber);
@@ -72,7 +70,7 @@ private:
     bb::pim::account::AccountService m_accountService;
 
     int m_smsAccountIdentifier;
-    int m_portNumber{9987};
+    const int m_portNumber{9987};
 
     QStringList m_blockedCallNumbers;
     QStringList m_blockedSmsNumbers;
