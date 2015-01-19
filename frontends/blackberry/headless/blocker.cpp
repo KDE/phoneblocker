@@ -248,4 +248,5 @@ void Blocker::handleDisconnected()
     disconnect(m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     m_socket->close();
+    m_socket->deleteLater();
 }
