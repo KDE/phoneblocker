@@ -205,40 +205,40 @@ void Blocker::handleNewConnection()
 
 void Blocker::read()
 {
-    if (!m_socket->canReadLine())
-        return;
-    QByteArray data = m_socket->readLine();
-    int sdata = data.size();
-    if (sdata < 3) {
-        qWarning() << "Invalid message";
-        return;
-    }
-    char csms = data.at(0);
-    char ccall = data.at(1);
-    if (sdata == 3) {
-        if (ccall == 'b') blockPrivateCall();
-        else if (ccall == 'u') unblockPrivateCall();
-    } else if (sdata == 4) {
-        char phoneNumber = data.at(2);
-        if (csms == 'b') {
-            if (phoneNumber == 'a') blockAllSms();
-            else if (phoneNumber == 'c') blockOutsideContactsSms();
-        } else if (csms == 'u') {
-            if (phoneNumber == 'a') unblockAllSms();
-            else if (phoneNumber == 'c') unblockOutsideContactsSms();
+    while (m_socket->canReadLine()) {
+        QByteArray data = m_socket->readLine();
+        int sdata = data.size();
+        if (sdata < 3) {
+            qWarning() << "Invalid message";
+            return;
         }
-        if (ccall == 'b') {
-            if (phoneNumber == 'a') blockAllCall();
-            else if (phoneNumber == 'c') blockOutsideContactsCall();
-        } else if (csms == 'u') {
-            if (phoneNumber == 'a') unblockAllCall();
-            else if (phoneNumber == 'c') unblockOutsideContactsCall();
+        char csms = data.at(0);
+        char ccall = data.at(1);
+        if (sdata == 3) {
+            if (ccall == 'b') blockPrivateCall();
+            else if (ccall == 'u') unblockPrivateCall();
+        } else if (sdata == 4) {
+            char phoneNumber = data.at(2);
+            if (csms == 'b') {
+                if (phoneNumber == 'a') blockAllSms();
+                else if (phoneNumber == 'c') blockOutsideContactsSms();
+            } else if (csms == 'u') {
+                if (phoneNumber == 'a') unblockAllSms();
+                else if (phoneNumber == 'c') unblockOutsideContactsSms();
+            }
+            if (ccall == 'b') {
+                if (phoneNumber == 'a') blockAllCall();
+                else if (phoneNumber == 'c') blockOutsideContactsCall();
+            } else if (csms == 'u') {
+                if (phoneNumber == 'a') unblockAllCall();
+                else if (phoneNumber == 'c') unblockOutsideContactsCall();
+            }
+        } else {
+            QByteArray phoneNumber = data.mid(2, sdata-3);
+            if (csms == 'b') blockSms(phoneNumber);
+            else if (csms == 'u') unblockSms(phoneNumber);
+            if (ccall == 'b') blockCall(phoneNumber);
+            else if (ccall == 'u') unblockCall(phoneNumber);
         }
-    } else {
-        QByteArray phoneNumber = data.mid(2, sdata-3);
-        if (csms == 'b') blockSms(phoneNumber);
-        else if (csms == 'u') unblockSms(phoneNumber);
-        if (ccall == 'b') blockCall(phoneNumber);
-        else if (ccall == 'u') unblockCall(phoneNumber);
     }
 }
