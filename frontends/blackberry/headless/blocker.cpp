@@ -184,7 +184,7 @@ void Blocker::listen()
 void Blocker::handleNewConnection()
 {
     m_socket = m_server.nextPendingConnection();
-    connect(m_socket, SIGNAL(disconnected()), SLOT(disconnected()));
+    connect(m_socket, SIGNAL(disconnected()), m_socket, SLOT(deleteLater()));
     connect(m_socket, SIGNAL(readyRead()), SLOT(read()));
 }
 
@@ -241,12 +241,4 @@ void Blocker::read()
         if (ccall == 'b') blockCall(phoneNumber);
         else if (ccall == 'u') unblockCall(phoneNumber);
     }
-}
-
-void Blocker::handleDisconnected()
-{
-    disconnect(m_socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-    disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-    m_socket->close();
-    m_socket->deleteLater();
 }

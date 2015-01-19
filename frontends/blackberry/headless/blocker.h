@@ -65,7 +65,6 @@ private Q_SLOTS:
     void listen();
     void handleNewConnection();
     void read();
-    void handleDisconnected();
 
 private:
     bb::system::phone::Phone m_phone;
