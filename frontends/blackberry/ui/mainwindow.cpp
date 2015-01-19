@@ -47,14 +47,11 @@ void MainWindow::createBlockedListPage()
     blockedListContainer->setHorizontalAlignment(HorizontalAlignment::Fill);
 
     createBlockedListView();
-    m_blockedCallListView.setScrollRole(ScrollRole::Main);
-    m_blockedCallListView.setHorizontalAlignment(HorizontalAlignment::Fill);
-    m_blockedSmsListView.setScrollRole(ScrollRole::Main);
-    m_blockedSmsListView.setHorizontalAlignment(HorizontalAlignment::Fill);
+    m_blockedListView.setScrollRole(ScrollRole::Main);
+    m_blockedListView.setHorizontalAlignment(HorizontalAlignment::Fill);
 
     blockedListContainer->add(backgroundImage);
-    blockedListContainer->add(&m_blockedCallListView);
-    blockedListContainer->add(&m_blockedSmsListView);
+    blockedListContainer->add(&m_blockedListView);
 
     m_blockedListPage.setContent(blockedListContainer);
 
@@ -162,26 +159,18 @@ void MainWindow::createBlockedListView()
     m_blockOutsideContactsSmsNumbers = settings.value(m_blockOutsideContactsSmsNumbersKey, false).toBool();
 
     QVariantMap callMap = QVariantMap();
-    QStringList blockedCallNumbers = settings.value(m_blockedCallNumbersKey, QStringList()).toStringList();
-    foreach (const QString &blockedCallNumber, blockedCallNumbers) {
-        callMap["phoneNumber"] = blockedCallNumber;
-        m_blockedCallListModel << callMap;
+    BlockedNumbers blockedNumbers = settings.value(m_blockedNumbersKey).value<BlockedNumbers>();
+    for (auto phoneNumber : blockedNumbers.keys()) {
+        callMap["phoneNumber"] = phoneNumber;
+        callMap["call"] = blockedNumbers.value(phoneNumber).first;
+        callMap["sms"] = blockedNumbers.value(phoneNumber).second;
+        m_blockedListModel << callMap;
     }
 
-    QVariantMap smsMap = QVariantMap();
-    QStringList blockedSmsNumbers = settings.value(m_blockedSmsNumbersKey, QStringList()).toStringList();
-    foreach (const QString &blockedSmsNumber, blockedSmsNumbers) {
-        smsMap["phoneNumber"] = blockedSmsNumber;
-        m_blockedSmsListModel << smsMap;
-    }
+    m_blockedListView.setDataModel(&m_blockedListModel);
+    // m_blockedListView.setListItemProvider(blockedItemManager);
 
-    m_blockedCallListView.setDataModel(&m_blockedCallListModel);
-    // m_blockedCallListView.setListItemProvider(blockedCallItemManager);
-    m_blockedSmsListView.setDataModel(&m_blockedSmsListModel);
-    // m_blockedSmsListView.setListItemProvider(blockedSmsItemManager);
-
-    connect(&m_blockedCallListView, SIGNAL(triggered(const QVariantList)), SLOT(handleBlockedCallListTriggered(const QVariantList)));
-    connect(&m_blockedSmsListView, SIGNAL(triggered(const QVariantList)), SLOT(handleBlockedSmsListTriggered(const QVariantList)));
+    connect(&m_blockedListView, SIGNAL(triggered(const QVariantList)), SLOT(handleBlockedListTriggered(const QVariantList)));
 }
 
 void MainWindow::handleBlockedCallListTriggered(const QVariantList)
@@ -209,10 +198,8 @@ void MainWindow::handleBlockButtonClicked()
 
 void MainWindow::handleTopChanged(bb::cascades::Page* page)
 {
-    if (page != &m_addBlockedItemPage) {
-        m_blockedCallListView.clearSelection();
-        m_blockedSmsListView.clearSelection();
-    }
+    if (page != &m_addBlockedItemPage)
+        m_blockedListView.clearSelection();
 }
 
 void MainWindow::handlePopTransitionEnded(bb::cascades::Page *page)

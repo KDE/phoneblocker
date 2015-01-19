@@ -34,6 +34,8 @@
 
 #include <QStringList>
 
+typedef QMap<QString, QPair<bool, bool>> BlockedNumbers;
+
 class MainWindow : public QObject
 {
     Q_OBJECT
@@ -60,11 +62,8 @@ private:
     bb::cascades::Page m_blockedListPage;
     bb::cascades::Page m_addBlockedItemPage;
 
-    bb::cascades::ListView m_blockedCallListView;
-    bb::cascades::ListView m_blockedSmsListView;
-
-    bb::cascades::QVariantListDataModel m_blockedCallListModel;
-    bb::cascades::QVariantListDataModel m_blockedSmsListModel;
+    bb::cascades::ListView m_blockedListView;
+    bb::cascades::QVariantListDataModel m_blockedListModel;
 
     bool m_blockAllSmsNumbers{false};
     bool m_blockOutsideContactsSmsNumbers{false};
@@ -73,8 +72,7 @@ private:
     bool m_blockAllCallNumbers{false};
     bool m_blockOutsideContactsCallNumbers{false};
 
-    const QString m_blockedCallNumbersKey{"blockedCallNumbers"};
-    const QString m_blockedSmsNumbersKey{"blockedSmsNumbers"};
+    const QString m_blockedNumbersKey{"blockedNumbers"};
     const QString m_blockAllCallNumbersKey{"blockAllCallNumbers"};
     const QString m_blockAllSmsNumbersKey{"blockAllSmsNumbers"};
     const QString m_blockOutsideContactsCallNumbersKey{"blockOutsideContactsCallNumbers"};
@@ -95,5 +93,6 @@ private:
 
     SocketWriter m_socketWriter;
 };
+Q_DECLARE_METATYPE(BlockedNumbers)
 
 #endif
