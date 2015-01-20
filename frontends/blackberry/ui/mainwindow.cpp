@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "blockeditemfactory.h"
 
 #include <bb/cascades/ActionItem>
 #include <bb/cascades/Application>
@@ -168,16 +169,13 @@ void MainWindow::createBlockedListView()
     }
 
     m_blockedListView.setDataModel(&m_blockedListModel);
-    // m_blockedListView.setListItemProvider(blockedItemManager);
+    BlockedItemFactory *blockedItemManager = new BlockedItemFactory();
+    m_blockedListView.setListItemProvider(blockedItemManager);
 
     connect(&m_blockedListView, SIGNAL(triggered(const QVariantList)), SLOT(handleBlockedListTriggered(const QVariantList)));
 }
 
-void MainWindow::handleBlockedCallListTriggered(const QVariantList)
-{
-}
-
-void MainWindow::handleBlockedSmsListTriggered(const QVariantList)
+void MainWindow::handleBlockedListTriggered(const QVariantList)
 {
 }
 

@@ -45,8 +45,7 @@ public:
     ~MainWindow();
 
 private Q_SLOTS:
-    void handleBlockedCallListTriggered(const QVariantList);
-    void handleBlockedSmsListTriggered(const QVariantList);
+    void handleBlockedListTriggered(const QVariantList);
     void handleBlockButtonClicked();
     void handleTopChanged(bb::cascades::Page* page);
     void handlePopTransitionEnded(bb::cascades::Page *page);
