@@ -78,8 +78,7 @@ void MainWindow::createAddBlockedItemPage()
     m_allOption = Option::create().text("All");
     m_privateOption = Option::create().text("Private");
     m_phoneNumberRadioGroup = RadioGroup::create().add(m_allOption).add(m_privateOption);
-    m_phoneNumberTextField = TextField::create().text("some phone number (e.g. +44747865325").hintText("Phone Number");
-    m_phoneNumberTextField->setInputMode(TextFieldInputMode::Type::PhoneNumber);
+    m_phoneNumberTextField = TextField::create().hintText("Some phone number (e.g. +44747865325)").inputMode(TextFieldInputMode::Type::PhoneNumber);
     m_callCheckBox = CheckBox::create().text("Call");
     m_smsCheckBox = CheckBox::create().text("Sms");
     m_blockButton = Button::create().text("Block");
