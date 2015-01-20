@@ -144,16 +144,18 @@ void Blocker::checkNewMessage(AccountKey /*account_key*/, ConversationKey /*conv
 {
     Message message = m_messageService.message(m_smsAccountIdentifier, message_key);
     MessageContact senderMessageContact = message.sender();
+    const QString phoneNumber = senderMessageContact.address();
     // TODO: Add check for m_blockOutsideContactsSmsNumbers and contact list
-    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and (m_blockAllSmsNumbers or m_blockedNumbers.contains(senderMessageContact.address())))
+    if ((message.mimeType() == MimeTypes::Sms) and message.isInbound() and (m_blockAllSmsNumbers or (m_blockedNumbers.contains(phoneNumber) and m_blockedNumbers.value(phoneNumber).second)))
         m_messageService.remove(m_smsAccountIdentifier, message_key);
 }
 
 void Blocker::checkNewCall(const bb::system::phone::Call &call)
 {
+    const QString phoneNumber = call.phoneNumber();
     // TODO(1): Add check for m_blockOutsideContactsCallNumbers and contact list
     // TODO(2): Add check for m_blockPrivateCallNumbers and private numbers
-    if (m_phone.activeLine().isValid() and m_blockedNumbers.contains(call.phoneNumber()))
+    if (m_phone.activeLine().isValid() and m_blockedNumbers.contains(phoneNumber) and m_blockedNumbers.value(phoneNumber).first)
         m_phone.endCall(call.callId());
 }
 
