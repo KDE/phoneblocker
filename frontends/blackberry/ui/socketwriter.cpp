@@ -27,6 +27,9 @@ SocketWriter::SocketWriter(QObject *parent)
     , m_csms('i')
     , m_ccall('i')
 {
+    m_socket.connectToHost(QHostAddress::LocalHost, m_portNumber);
+    if (!m_socket.waitForConnected())
+        return false;
 }
 
 SocketWriter::~SocketWriter()
@@ -107,9 +110,6 @@ void SocketWriter::setPhoneNumber(const QByteArray &phoneNumber)
 
 bool SocketWriter::write()
 {
-    m_socket.connectToHost(QHostAddress::LocalHost, m_portNumber);
-    if (!m_socket.waitForConnected())
-        return false;
     QByteArray data;
     data.append(m_csms); data.append(m_ccall); data.append(m_phoneNumber); data.append('\n');
     m_socket.write(data);
