@@ -71,9 +71,8 @@ void Blocker::unblock(const QString &phoneNumber, bool call, bool sms)
             m_blockedNumbers.remove(phoneNumber);
         else {
             QPair<bool, bool> callSmsPair = m_blockedNumbers.value(phoneNumber);
-            if ((callSmsPair.first and call) or (callSmsPair.second and sms))
-                m_blockedNumbers.remove(phoneNumber);
-            m_blockedNumbers[phoneNumber] = qMakePair(call ? !call : callSmsPair.first, sms ? !sms : callSmsPair.second);
+            if ((callSmsPair.first and call) or (callSmsPair.second and sms)) m_blockedNumbers.remove(phoneNumber);
+            else m_blockedNumbers[phoneNumber] = qMakePair(call ? !call : callSmsPair.first, sms ? !sms : callSmsPair.second);
         }
         QSettings settings(m_authorName, m_applicationName);
         settings.setValue(m_blockedNumbersKey, QVariant::fromValue<BlockedNumbers>(m_blockedNumbers));
